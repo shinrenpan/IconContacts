@@ -8,4 +8,4 @@ notifications:
   email: false
 
 script:
-  - xctool -project Demo/Demo.xcodeproj -scheme Demo -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO clean build
+  - xctool -project IconContacts.xcodeproj -scheme IconContacts -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO clean build
