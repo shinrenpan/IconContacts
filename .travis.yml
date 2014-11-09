@@ -1,0 +1,11 @@
+language: objective-c
+
+before_install:
+  - brew update
+  - brew reinstall xctool
+
+notifications:
+  email: false
+
+script:
+  - xctool -project Demo/Demo.xcodeproj -scheme Demo -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO clean build
