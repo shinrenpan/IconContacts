@@ -1,5 +1,9 @@
 # Icon 聯絡簿
 
+[![Build Status](https://travis-ci.org/shinrenpan/IconContacts.svg)](https://travis-ci.org/shinrenpan/IconContacts)
+
+![](https://raw.githubusercontent.com/shinrenpan/IconContacts/master/IconContacts/Images.xcassets/AppIcon.appiconset/Icon-60@2x.png)
+
 [Demo video](http://youtu.be/pwvFJ4OEjlg)
 
 Icon 聯絡簿是一款 iOS App, 允許你將聯絡人加到桌面捷徑, 且不需要網路連線.
