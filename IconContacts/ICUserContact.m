@@ -22,7 +22,6 @@
 
 #import "ICUserContact.h"
 
-
 @interface ICUserContact ()
 
 @property (nonatomic, copy) NSString *userName;
@@ -69,12 +68,13 @@
     return _userImage;
 }
 
-#pragma mark - 初始設置
+#pragma mark - Private
+#pragma mark 初始設置
 - (void)__configureWithPerson:(ABRecordRef)person
 {
     // Get User image
     NSData *imgData = CFBridgingRelease(ABPersonCopyImageData(person));
-    self.userImage  = [UIImage imageWithData:imgData];
+    _userImage      = [UIImage imageWithData:imgData];
     
     
     // Get User name
@@ -84,38 +84,39 @@
     lastName  = lastName.length ? lastName : @"";
     firstName = firstName.length ? firstName : @"";
     
+    // 判斷 firstName 在前還是在後
     if(ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst)
     {
-        self.userName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+        _userName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
     }
     else
     {
-        self.userName = [NSString stringWithFormat:@"%@ %@", lastName, firstName];
+        _userName = [NSString stringWithFormat:@"%@ %@", lastName, firstName];
     }
     
     
     // Get User phones
-    self.userPhones        = [NSMutableArray array];
+    _userPhones            = [NSMutableArray array];
     ABMultiValueRef phones = ABRecordCopyValue(person, kABPersonPhoneProperty);
     
     for(CFIndex i=0; i!=ABMultiValueGetCount(phones); i++)
     {
         NSString *phoneNum = CFBridgingRelease(ABMultiValueCopyValueAtIndex(phones, i));
-        [_userPhones addObject:phoneNum];
         
+        [_userPhones addObject:phoneNum];
     }
     
     CFRelease(phones);
     
     
     // Get User Emails
-    self.userEmails        = [NSMutableArray array];
+    _userEmails            = [NSMutableArray array];
     ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
     
     for(CFIndex i=0; i!=ABMultiValueGetCount(emails); i++)
     {
-
         NSString *email = CFBridgingRelease(ABMultiValueCopyValueAtIndex(emails, i));
+        
         [_userEmails addObject:email];
     }
     

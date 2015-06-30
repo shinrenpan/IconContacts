@@ -21,9 +21,9 @@
 // THE SOFTWARE.
 
 #import "AppDelegate.h"
-#import <AddressBook/AddressBook.h>
 #import "ICAuthorizedUnknowController.h"
 
+#import <AddressBook/AddressBook.h>
 
 @interface ICAuthorizedUnknowController ()
 
@@ -42,14 +42,15 @@
     _noticeLabel.text = @"本程式需要使用您的通訊錄\n請按下方允許按鈕後開始使用";
 }
 
-#pragma mark - 按下允許
-- (IBAction)allowButtonDidClicked:(id)sender
+#pragma mark - IBAction
+#pragma mark 按下允許
+- (IBAction)allowButtonClicked:(id)sender
 {
     __block BOOL allow;
     
     ABAddressBookRef addressBook;
-    addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
     
+    addressBook               = ABAddressBookCreateWithOptions(NULL, NULL);
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
     ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error){
@@ -59,11 +60,12 @@
     
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER); 
     
-    [self __allowHandle:allow];
+    [self __handleAllow:allow];
 }
 
-#pragma mark - 處理允許結果
-- (void)__allowHandle:(BOOL)allow
+#pragma mark - Private
+#pragma mark 處理允許結果
+- (void)__handleAllow:(BOOL)allow
 {
     AppDelegate *delegate = [UIApplication sharedApplication].delegate;
     

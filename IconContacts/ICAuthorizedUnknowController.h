@@ -22,9 +22,8 @@
 
 #import <UIKit/UIKit.h>
 
-
 /**
- *  存取聯絡簿未知狀態 mvc
+ *  未知授權存取聯絡簿 UIViewController
  */
 @interface ICAuthorizedUnknowController : UIViewController
 

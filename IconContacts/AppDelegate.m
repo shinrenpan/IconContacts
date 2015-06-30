@@ -22,17 +22,18 @@
 
 #import "ICServer.h"
 #import "AppDelegate.h"
+
 #import <AddressBook/AddressBook.h>
 
 
 @implementation AppDelegate
 
 #pragma mark - LifeCycle
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)
-launchOptions {
-    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:
+  (NSDictionary *)launchOptions
+{
     // 不使用 MainStoryboard 當 RootViewController
-    self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
+    _window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     
     [self __checkRootViewController];
     [_window makeKeyAndVisible];
@@ -43,10 +44,11 @@ launchOptions {
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     // 背景執行 support
-    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
-    }];
+    __block UIBackgroundTaskIdentifier bgTask =
+      [application beginBackgroundTaskWithExpirationHandler:^{
+          [application endBackgroundTask:bgTask];
+          bgTask = UIBackgroundTaskInvalid;
+      }];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -64,28 +66,30 @@ launchOptions {
     }
 }
 
-#pragma mark - 允許
+#pragma mark - Public
+#pragma mark 進入同意授權存取聯絡簿 UIViewController
 - (void)changeRootViewControllerToICAuthorizedAllowController
 {
     UIStoryboard *story        = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     _window.rootViewController = [story instantiateViewControllerWithIdentifier:@"Allow"];
 }
 
-#pragma mark - 拒絕
+#pragma mark 進入拒絕授權存取聯絡簿 UIViewController
 - (void)changeRootViewControllerToICAuthorizedDeniedController
 {
     UIStoryboard *story        = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     _window.rootViewController = [story instantiateViewControllerWithIdentifier:@"Denied"];
 }
 
-#pragma mark - 未知
+#pragma mark - Private
+#pragma mark 進入未知授權存取聯絡簿 UIViewController
 - (void)__changeRootViewControllerToICAuthorizedUnknowController
 {
     UIStoryboard *story        = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     _window.rootViewController = [story instantiateViewControllerWithIdentifier:@"Unknow"];
 }
 
-#pragma mark - 檢查要使用哪個 RootViewController
+#pragma mark 檢查 RootViewController 應該進入哪個畫面
 - (void)__checkRootViewController
 {
     ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();

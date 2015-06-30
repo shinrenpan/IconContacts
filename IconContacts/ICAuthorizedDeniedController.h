@@ -22,9 +22,8 @@
 
 #import <UIKit/UIKit.h>
 
-
 /**
- *  已拒絕存取通訊錄 mvc
+ *  拒絕授權存取聯絡簿 UIViewController
  */
 @interface ICAuthorizedDeniedController : UIViewController
 

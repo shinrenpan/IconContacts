@@ -22,7 +22,6 @@
 
 #import <UIKit/UIKit.h>
 
-
 /**
  *  App Delegate
  */
@@ -44,12 +43,12 @@
 ///-----------------------------------------------------------------------------
 
 /**
- *  進入允許頁面 mvc
+ *  進入同意授權存取聯絡簿 UIViewController
  */
 - (void)changeRootViewControllerToICAuthorizedAllowController;
 
 /**
- *  進入拒絕頁面 mvc
+ *  進入拒絕授權存取聯絡簿 UIViewController
  */
 - (void)changeRootViewControllerToICAuthorizedDeniedController;
 

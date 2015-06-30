@@ -24,7 +24,6 @@
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 
-
 /**
  *  聯絡人物件
  */

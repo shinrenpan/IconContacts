@@ -22,9 +22,8 @@
 
 #import <UIKit/UIKit.h>
 
-
 /**
- *  已允許存取聯絡簿 mvc
+ *  同意授權存取聯絡簿 UIViewController
  */
 @interface ICAuthorizedAllowController : UIViewController
 

@@ -23,8 +23,8 @@
 #import "ICServer.h"
 #import "ICUserContact.h"
 #import "ICAuthorizedAllowController.h"
-#import <AddressBookUI/AddressBookUI.h>
 
+#import <AddressBookUI/AddressBookUI.h>
 
 @interface ICAuthorizedAllowController ()
 <
@@ -80,12 +80,11 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:
-(NSIndexPath *)indexPath
+  (NSIndexPath *)indexPath
 {
     NSString *title;
-    NSInteger row = indexPath.row;
-    NSInteger section = indexPath.section;
-    
+    NSInteger row         = indexPath.row;
+    NSInteger section     = indexPath.section;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
 
     switch (section)
@@ -130,11 +129,12 @@
 - (void)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
                          didSelectPerson:(ABRecordRef)person
 {
-    self.user = [[ICUserContact alloc]initWithPerson:person];
+    _user = [[ICUserContact alloc]initWithPerson:person];
 }
 
-#pragma mark - 按下選取
-- (IBAction)selectPersonDidClicked:(id)sender
+#pragma mark - IBAction
+#pragma mark 按下選取聯絡人
+- (IBAction)selectButtonClicked:(UIButton *)sender
 {
     ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc]init];
     
@@ -143,18 +143,23 @@
     [self presentViewController:picker animated:YES completion:nil];
 }
 
-#pragma mark - 按下左上 Item
-- (IBAction)leftBarButtonItemDidClicked:(id)sender
+#pragma mark 按下左上角 Item
+- (IBAction)leftItemClicked:(UIBarButtonItem *)sender
 {
     if(!_user)
     {
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:nil
-                                                       message:@"請先選取聯絡人"
-                                                      delegate:nil
-                                             cancelButtonTitle:@"確定"
-                                             otherButtonTitles:nil];
+        UIAlertController *alert =
+          [UIAlertController alertControllerWithTitle:nil
+                                              message:@"請先選取聯絡人"
+                                       preferredStyle:UIAlertControllerStyleAlert];
         
-        [alert show];
+        UIAlertAction *OK = [UIAlertAction actionWithTitle:@"確定"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:nil];
+        
+        [alert addAction:OK];
+        
+        [self presentViewController:alert animated:YES completion:nil];
     }
     else
     {
@@ -171,18 +176,18 @@
     }
 }
 
-#pragma mark - 重置 UI
+#pragma mark - Private
+#pragma mark Reset UI
 - (void)__resetUI
 {
-    BOOL selected = _user != nil;
-    
+    BOOL selected       = _user != nil;
     _tableView.hidden   = !selected;
     _noticeLabel.hidden = selected;
     
     [_tableView reloadData];
 }
 
-#pragma mark - Copy HTML
+#pragma mark Copy index.html
 - (void)__copyHTMLToNSTemporaryDirectory
 {
     NSString *path = [[NSBundle mainBundle]pathForResource:@"index"
@@ -195,11 +200,11 @@
     NSMutableString *body = [NSMutableString string];
     
     [_user.phones enumerateObjectsUsingBlock:^(NSString *tel, NSUInteger idx, BOOL *stop) {
-        [body appendString:[self __telCodeBlock:tel]];
+        [body appendString:[self __HTMLCodeForPhoneNumber:tel]];
     }];
     
     [_user.emails enumerateObjectsUsingBlock:^(NSString *mail, NSUInteger idx, BOOL *stop) {
-        [body appendString:[self __mailCodeBlock:mail]];
+        [body appendString:[self __HTMLCodeForEmail:mail]];
     }];
     
     HTML = [NSString stringWithFormat:HTML, _user.name, _user.name, body];
@@ -210,7 +215,7 @@
                 error:nil];
 }
 
-#pragma mark - Copy manifest
+#pragma mark Copy cache.manifest
 - (void)__copyManifestToNSTemporaryDirectory
 {
     NSString *path = [[NSBundle mainBundle]pathForResource:@"cache"
@@ -226,7 +231,7 @@
                     error:nil];
 }
 
-#pragma mark - Copy Icon
+#pragma mark Copy Icon
 - (void)__copyIconToNSTemporaryDirectory
 {
     UIImage *icon = _user.image;
@@ -247,33 +252,54 @@
                 error:nil];
 }
 
-#pragma mark - 電話的 HTML code
-- (NSString *)__telCodeBlock:(NSString *)tel
+#pragma mark 撥打電話 HTML code
+- (NSString *)__HTMLCodeForPhoneNumber:(NSString *)phoneNumber
 {
-    NSString *codeBlock = @"\n<br/>\n<br/>\n<label style=\"font-size:150%%;color:#FF6666\">%@</label>\n<br/>\n<select style=\"font-size:100%%;color:#555555\" onchange=\"location = this.options[this.selectedIndex].value;\">\n<option value=\"#\">請選擇要執行的動作</option>\n<option value=\"tel:%@\">播打電話</option>\n<option value=\"sms:%@\">傳訊簡訊</option>\n<option value=\"facetime:%@\">Facetime</option>\n</select>\n";
+    NSString *HTML =
+    @"<br/>"
+    @"<br/>"
+    @"<label style='font-size:150%%;color:#FF6666'>%@</label>"
+    @"<br/>"
+    @"<select style='font-size:100%%;color:#555555'"
+    @"onchange='location = this.options[this.selectedIndex].value;'>"
     
-    return [NSString stringWithFormat:codeBlock, tel, tel, tel, tel];
+    @"<option value='#'>請選擇要執行的動作</option>"
+    @"<option value='tel:%@'>播打電話</option>"
+    @"<option value='sms:%@'>傳訊簡訊</option>"
+    @"<option value='facetime:%@'>Facetime</option>"
+    
+    @"</select>";
+    
+    return [NSString stringWithFormat:HTML, phoneNumber, phoneNumber, phoneNumber, phoneNumber];
 }
 
-#pragma mark - Mail 的 HTML code
-- (NSString *)__mailCodeBlock:(NSString *)mail
+#pragma mark Send email HTML code
+- (NSString *)__HTMLCodeForEmail:(NSString *)email
 {
-    NSString *codeBlock = @"\n<br/>\n<br/>\n<label style=\"font-size:150%%;color:#FF6666\">%@</label>\n<br/>\n<select style=\"font-size:100%%;color:#555555\" onchange=\"location = this.options[this.selectedIndex].value;\">\n<option value=\"#\">請選擇要執行的動作</option>\n<option value=\"mailto:%@\">寄送 Email</option>\n<option value=\"facetime:%@\">Facetime</option>\n</select>\n";
+    NSString *HTML =
+    @"<br/>"
+    @"<br/>"
+    @"<label style='font-size:150%%;color:#FF6666'>%@</label>"
+    @"<br/>"
+    @"<select style='font-size:100%%;color:#555555'"
+    @"onchange='location = this.options[this.selectedIndex].value;'>"
     
-    return [NSString stringWithFormat:codeBlock, mail, mail, mail];
+    @"<option value='#'>請選擇要執行的動作</option>"
+    @"<option value='mailto:%@'>寄送 Email</option>"
+    @"<option value='facetime:%@'>Facetime</option>"
+    
+    @"</select>";
+    
+    return [NSString stringWithFormat:HTML, email, email, email];
 }
 
-#pragma mark - 將圖片轉成 Icon 180x180
+#pragma mark UIImage to desktop Icon size
 - (UIImage *)__imageToIcon:(UIImage *)image
 {
-    float scale = 180.f / image.size.width;
-    
-    float newHeight = image.size.height * scale;
-    
-    CGRect newRect = CGRectMake(0, 0, 180.0, newHeight);
+    float scale         = 180.f / image.size.width;
+    float newHeight     = image.size.height * scale;
+    CGRect newRect      = CGRectMake(0, 0, 180.0, newHeight);
     CGImageRef imageRef = image.CGImage;
-    
-    // Build a context that's the same dimensions as the new size
     CGContextRef bitmap = CGBitmapContextCreate(NULL,
                                                 newRect.size.width,
                                                 newRect.size.height,
@@ -281,21 +307,17 @@
                                                 0,
                                                 CGImageGetColorSpace(imageRef),
                                                 CGImageGetBitmapInfo(imageRef));
-    
-    // Set the quality level to use when rescaling
+
     CGContextSetInterpolationQuality(bitmap, kCGInterpolationHigh);
-    
-    // Draw into the context; this scales the image
     CGContextDrawImage(bitmap, newRect, imageRef);
     
-    // Get the resized image from the context and a UIImage
     CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
     
-    CGImageRef finalImageRef = CGImageCreateWithImageInRect(newImageRef, CGRectMake(0, 0, 180.0, 180.0));
+    CGImageRef finalImageRef =
+      CGImageCreateWithImageInRect(newImageRef, CGRectMake(0, 0, 180.0, 180.0));
     
     UIImage *newImage = [UIImage imageWithCGImage:finalImageRef];
     
-    // Clean up
     CGContextRelease(bitmap);
     CGImageRelease(newImageRef);
     CGImageRelease(finalImageRef);

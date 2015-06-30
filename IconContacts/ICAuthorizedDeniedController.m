@@ -22,7 +22,6 @@
 
 #import "ICAuthorizedDeniedController.h"
 
-
 @interface ICAuthorizedDeniedController ()
 
 @property (nonatomic, weak) IBOutlet UILabel *noticeLabel;
@@ -41,7 +40,7 @@
 }
 
 #pragma mark - 按下開啟設定
-- (IBAction)settingButtonDidClicked:(id)sender
+- (IBAction)settingButtonClicked:(id)sender
 {
     NSURL *URL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
     

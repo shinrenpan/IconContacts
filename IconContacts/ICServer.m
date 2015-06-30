@@ -23,7 +23,6 @@
 #include "mongoose.h"
 #import "ICServer.h"
 
-
 @interface ICServer ()
 
 @property (nonatomic, assign) int port;
@@ -64,8 +63,8 @@
     }
     
     // 給予亂數 port
-    self.ctx        = mg_start();
-    self.port       = arc4random_uniform(10000)+80;
+    _ctx            = mg_start();
+    _port           = arc4random_uniform(10000)+80;
     NSString *ports = [NSString stringWithFormat:@"%d", _port];
     
     mg_set_option(_ctx, "root", NSTemporaryDirectory().UTF8String);
@@ -79,7 +78,7 @@
     {
         mg_stop(_ctx);
         
-        self.ctx = NULL;
+        _ctx = NULL;
     }
 }
 
